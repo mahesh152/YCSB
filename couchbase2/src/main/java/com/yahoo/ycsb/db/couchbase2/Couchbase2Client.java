@@ -391,8 +391,15 @@ public class Couchbase2Client extends DB {
 
   private Status soeUpdateKv(Generator gen)  {
 
+    RawJsonDocument doc = RawJsonDocument.create(gen.getCustomerIdWithDistribution(),
+        documentExpiry, gen.getPredicate().getValueA());
+
+    RawJsonDocument loaded = bucket.get(doc.id(), RawJsonDocument.class);
+    System.out.println("Id: " + doc.id() + ", Old doc: " + loaded.content());
+    System.out.println("Id: " + doc.id() + ", New doc: " + doc.content());
+
     waitForMutationResponse(bucket.async().replace(
-        RawJsonDocument.create(gen.getCustomerIdWithDistribution(), documentExpiry, gen.getPredicate().getValueA()),
+        doc,
         persistTo,
         replicateTo
     ));
