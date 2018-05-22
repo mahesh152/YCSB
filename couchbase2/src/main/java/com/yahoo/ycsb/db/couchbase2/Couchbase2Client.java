@@ -1148,16 +1148,17 @@ public class Couchbase2Client extends DB {
         gen.getPredicatesSequence().get(1).getName() + "." +
         gen.getPredicatesSequence().get(1).getNestedPredicateA().getName()+ " = $1 ";
 
-    N1qlQueryResult queryResult = bucket.query(N1qlQuery.parameterized(
-         soeReport1N1qlQuery,
-         JsonArray.from(gen.getPredicatesSequence().get(1).getNestedPredicateA().getValueA()),
-         N1qlParams.build().adhoc(adhoc).maxParallelism(maxParallelism)
-    ));
+    ParameterizedN1qlQuery q = N1qlQuery.parameterized(soeReport1N1qlQuery,
+        JsonArray.from(gen.getPredicatesSequence().get(1).getNestedPredicateA().getValueA()),
+        N1qlParams.build().adhoc(adhoc).maxParallelism(maxParallelism));
+    System.out.println("Report query1: " + q.statementValue());
+    System.out.println("Report query2: " + q.toString());
+    N1qlQueryResult queryResult = bucket.query(q);
     if (!queryResult.parseSuccess() || !queryResult.finalSuccess()) {
       throw new RuntimeException("Error while parsing N1QL Result. Query: " + soeReport1N1qlQuery
           + ", Errors: " + queryResult.errors());
     }
-
+    System.out.println("Result size: " + queryResult.allRows().size());
     for (N1qlQueryRow row : queryResult) {
       HashMap<String, ByteIterator> tuple = new HashMap<String, ByteIterator>(gen.getAllFields().size());
       soeDecode(row.value().toString(), null, tuple);
