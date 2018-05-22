@@ -1151,8 +1151,9 @@ public class Couchbase2Client extends DB {
     ParameterizedN1qlQuery q = N1qlQuery.parameterized(soeReport1N1qlQuery,
         JsonArray.from(gen.getPredicatesSequence().get(1).getNestedPredicateA().getValueA()),
         N1qlParams.build().adhoc(adhoc).maxParallelism(maxParallelism));
-    System.out.println("Report query1: " + q.statementValue());
-    System.out.println("Report query2: " + q.toString());
+    System.out.println("Report query params: " + q.statementParameters());
+    System.out.println("Report query: " + q.toString());
+    System.out.println("Report query statement: " + q.statement());
     N1qlQueryResult queryResult = bucket.query(q);
     if (!queryResult.parseSuccess() || !queryResult.finalSuccess()) {
       throw new RuntimeException("Error while parsing N1QL Result. Query: " + soeReport1N1qlQuery
